@@ -1,0 +1,41 @@
+--   type:      Oracle Database 11g
+-- Depois corrigir para mysql
+
+CREATE TABLE bairro (
+    nome_bairro VARCHAR 
+     NOT NULL,
+    id          INT 
+     NOT NULL
+);
+
+ALTER TABLE bairro ADD CONSTRAINT bairro_pk PRIMARY KEY ( id );
+
+CREATE TABLE crime (
+    id         INT 
+     NOT NULL,
+    nome_crime VARCHAR 
+     NOT NULL,
+    mes_id     INT 
+     NOT NULL,
+    bairro_id  INT 
+     NOT NULL
+);
+
+ALTER TABLE crime ADD CONSTRAINT crime_pk PRIMARY KEY ( id );
+
+CREATE TABLE mes (
+    nome_mes VARCHAR 
+     NOT NULL,
+    id       INT 
+     NOT NULL
+);
+
+ALTER TABLE mes ADD CONSTRAINT mes_pk PRIMARY KEY ( id );
+
+ALTER TABLE crime
+    ADD CONSTRAINT crime_bairro_fk FOREIGN KEY ( bairro_id )
+        REFERENCES bairro ( id );
+
+ALTER TABLE crime
+    ADD CONSTRAINT crime_mes_fk FOREIGN KEY ( mes_id )
+        REFERENCES mes ( id );
