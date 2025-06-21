@@ -88,18 +88,19 @@ def alertaTemporeal():
         "regiao_administrativa": regiao_administrativa,
         "hora_ocorencia": hora_ocorencia
     }
-
+    
     try:
         response = requests.get(url, headers=headers, params=params)
         response.raise_for_status()
+        try:
+            valor = float(response.text)
+            return jsonify({"risco": valor}), 200
+        except ValueError:
+            return jsonify({"risco": ""}), 400
+
     except requests.exceptions.RequestException as e:
         print("Erro na requisição:", e)
         return jsonify({"message": "Erro na API"}), 500
-
-    try:
-        return jsonify(response.json())
-    except ValueError:
-        return jsonify({"risco": response.text})
 
 @app.route('/images', methods=['POST'])
 def adicionarNovaImagem():
