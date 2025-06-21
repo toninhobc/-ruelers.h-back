@@ -75,8 +75,9 @@ def listarAlertasUltimas24hrs():
 
 @app.route("/alertas-temporeal", methods=['GET'])
 def alertaTemporeal():
-    Alerta = request.get_json()
-    if not Alerta or 'regiao_administrativa' not in Alerta or 'hora_ocorencia' not in Alerta:
+    regiao_administrativa = request.args.get('regiao_administrativa')
+    hora_ocorencia = request.args.get('hora_ocorencia')
+    if not regiao_administrativa or not hora_ocorencia:
         return jsonify({"message": "Dados incompletos"}), 400
 
     url = "https://hook.us2.make.com/9izgak8bgq6twkuxm5fgl12kxxqxtb59"
@@ -84,8 +85,8 @@ def alertaTemporeal():
         "x-make-apikey": "0000"
     }
     params = {
-        "regiao_administrativa": Alerta["regiao_administrativa"],
-        "hora_ocorencia": Alerta["hora_ocorencia"]
+        "regiao_administrativa": regiao_administrativa,
+        "hora_ocorencia": hora_ocorencia
     }
 
     try:
@@ -93,10 +94,12 @@ def alertaTemporeal():
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         print("Erro na requisição:", e)
+        return jsonify({"message": "Erro na API"}), 500
 
-    if response.status_code != 200:
-        return jsonify({"message": "Erro ao buscar alertas"}), 500
-    return jsonify({"message":"response.text()"})
+    try:
+        return jsonify(response.json())
+    except ValueError:
+        return jsonify({"risco": response.text})
 
 @app.route('/images', methods=['POST'])
 def adicionarNovaImagem():
