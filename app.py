@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os 
 from datetime import datetime, timedelta 
+import requests
 
 app = Flask(__name__)
 load_dotenv("./.env")
@@ -33,7 +34,7 @@ class Images(db.Model):
 def adicionarNovoAlerta():
     Alerta = request.get_json()
 
-    if 'Genero' not in Alerta or 'ClassificacaoAlerta' not in Alerta or 'TipoOcorrencia' not in Alerta or 'HoraOcorrencia' not in Alerta or 'Descricao' not in Alerta or 'Localizacao' not in Alerta:
+    if 'Genero' not in Alerta or 'TipoOcorrencia' not in Alerta or 'ClassificaoAlerta' not in Alerta or 'HoraOcorrencia' not in Alerta or 'Descricao' not in Alerta or 'Localizacao' not in Alerta:
         return jsonify({"message": "Dados incompletos"}), 400
 
     novo_alerta = Forms(
@@ -71,6 +72,31 @@ def listarAlertasUltimas24hrs():
 
     return jsonify(lista_alertas), 200
 
+
+@app.route("/alertas-temporeal", methods=['GET'])
+def alertaTemporeal():
+    Alerta = request.get_json()
+    if not Alerta or 'regiao_administrativa' not in Alerta or 'hora_ocorencia' not in Alerta:
+        return jsonify({"message": "Dados incompletos"}), 400
+
+    url = "https://hook.us2.make.com/9izgak8bgq6twkuxm5fgl12kxxqxtb59"
+    headers = {
+        "x-make-apikey": "0000"
+    }
+    params = {
+        "regiao_administrativa": Alerta["regiao_administrativa"],
+        "hora_ocorencia": Alerta["hora_ocorencia"]
+    }
+
+    try:
+        response = requests.get(url, headers=headers, params=params)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print("Erro na requisição:", e)
+
+    if response.status_code != 200:
+        return jsonify({"message": "Erro ao buscar alertas"}), 500
+    return jsonify({"message":"response.text()"})
 
 @app.route('/images', methods=['POST'])
 def adicionarNovaImagem():
