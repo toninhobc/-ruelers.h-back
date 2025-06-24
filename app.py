@@ -34,7 +34,7 @@ class Images(db.Model):
 def adicionarNovoAlerta():
     Alerta = request.get_json()
 
-    if 'Genero' not in Alerta or 'TipoOcorrencia' not in Alerta or 'ClassificaoAlerta' not in Alerta or 'HoraOcorrencia' not in Alerta or 'Descricao' not in Alerta or 'Localizacao' not in Alerta:
+    if 'Genero' not in Alerta or 'TipoOcorrencia' not in Alerta or 'ClassificacaoAlerta' not in Alerta or 'HoraOcorrencia' not in Alerta or 'Descricao' not in Alerta or 'Localizacao' not in Alerta:
         return jsonify({"message": "Dados incompletos"}), 400
 
     novo_alerta = Forms(
